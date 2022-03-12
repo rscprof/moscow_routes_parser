@@ -1,0 +1,8 @@
+.idea
+.pypirc
+venv
+dist
+*.egg-info
+.coverage
+htmlcov
+
