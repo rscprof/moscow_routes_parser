@@ -14,6 +14,15 @@ class Stop_impl(Stop):
     def get_name(self) -> str:
         return self.name
 
+    def __str__(self):
+        return self.get_name()
+
+    def __repr__(self):
+        return self.get_name()
+
+    def __hash__(self):
+        return hash((self.get_coords(),self.name))
+
     def __init__(self, name: str, coords: Tuple[float, float]):
         self.coords = coords
         self.name = name
@@ -115,11 +124,15 @@ class Timetable_stop_t_mos_ru(Timetable_stop):
 
 class Timetable_t_mos_ru(Timetable):
 
+    def has_another_direction(self):
+        return self.flag_has_another_direction
+
     def get_stops(self) -> list[Timetable_stop]:
         return self.stops
 
     def __init__(self, id_route_t_mos_ru: str, direction: int, date: datetime.date,
-                 stops: list[Timetable_stop]):
+                 stops: list[Timetable_stop],flag_has_another_direction=False):
+        self.flag_has_another_direction = flag_has_another_direction
         self.id_route_t_mos_ru = id_route_t_mos_ru
         self.direction = direction
         self.stops = stops
@@ -175,6 +188,8 @@ class Timetable_stop_builder_t_mos_ru(Timetable_stop_builder):
 class Timetable_builder_t_mos_ru(Timetable_builder):
 
     def __init__(self):
+        #Default True for backward compatilibity
+        self.flag_has_another_direction = True
         self.date = None
         self.direction = None
         self.id_route_t_mos_ru = None
@@ -195,7 +210,9 @@ class Timetable_builder_t_mos_ru(Timetable_builder):
             self.direction,
             self.date,
             list(map(lambda stop_builder: stop_builder.build(),
-                     self.stops)))
+                     self.stops)),
+            self.flag_has_another_direction
+        )
 
     def set_id_route_t_mos_ru(self, id_route_t_mos_ru: str) -> Timetable_builder:
         self.id_route_t_mos_ru = id_route_t_mos_ru
@@ -204,3 +221,8 @@ class Timetable_builder_t_mos_ru(Timetable_builder):
     def set_direction(self, direction: int) -> Timetable_builder:
         self.direction = direction
         return self
+
+    def set_has_another_direction(self,flag_has_another_direction=True):
+        self.flag_has_another_direction=flag_has_another_direction
+
+

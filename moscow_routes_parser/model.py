@@ -174,6 +174,12 @@ class Timetable_stop:
 class Timetable:
     """"Timetable of route"""
 
+    def has_another_direction(self):
+        """"Return true if the route has another direction
+        By default true for backward compatible
+        """
+        return True
+
     @abstractmethod
     def __iter__(self):
         """Iterator for stops (with timetables on stop)"""
@@ -253,6 +259,13 @@ class Timetable_builder:
     @abstractmethod
     def build(self) -> Timetable:
         """"Build timetable"""
+        pass
+
+
+    def set_has_another_direction(self,flag_has_another_direction=True):
+        """"Set if the route has another direction or not
+            By default nothing for backward compatibility
+        """
         pass
 
     @abstractmethod

@@ -34,10 +34,11 @@ class parser_timetable_t_mos_ru(parser_timetable):
         2022-Jan-11)
 
         Since 12.01.2022 t.mos.ru drop data-services from results
-
+        Since 13.03.2022 added flag_has_another_direction
         @param text: text for parse
         @return Timetable for route
         """
+
         result_stops = type(self.builder())()
         # stops = re.finditer(r'data-stop="([^"]*?)".*?data-services="([^"]*?)".*?d-inline.*?>(.*?)<(.*?)</li>', text,
         #                     re.M + re.S
@@ -49,6 +50,10 @@ class parser_timetable_t_mos_ru(parser_timetable):
                                        re.M + re.S
                                        )
         data_coords_list = list(data_coords_iter)
+        if re.search(r'ic-change-a-b', text, re.M + re.S) is None:
+            result_stops.set_has_another_direction(False)
+        else:
+            result_stops.set_has_another_direction(True)
         # если есть расписание
         if len(data_coords_list) > 0:
             data_coords = data_coords_list[0].group(1)
@@ -156,7 +161,8 @@ def get_route(date: datetime.date, id_route_t_mos_ru: str, direction: int,
                                     'mgt_schedule[date]': date.strftime("%d.%m.%Y"),
                                     'mgt_schedule[route]': id_route_t_mos_ru,
                                     'mgt_schedule[direction]': direction,
-                                }
+                                },
+                                headers={'X-Requested-With': 'XMLHttpRequest'}
                                 )
         if response.status_code == 200:
             logger.info("Get route #{}".format(id_route_t_mos_ru))
@@ -206,11 +212,12 @@ def get_list_routes(work_time: int, direction: int,
                                         params={
                                             'mgt_schedule[search]': '',
                                             'mgt_schedule[isNight]': '',
-                                            'mgt_schedule[filters]': '',
+                                            #  'mgt_schedule[filters]': '',
                                             'mgt_schedule[work_time]': work_time,
                                             'page': page,
                                             'mgt_schedule[direction]': direction,
                                         }
+                                        , headers={'X-Requested-With': 'XMLHttpRequest'}
                                         # , headers={'Cookie': "_ym_d=1637468102; _ym_uid=1637468102592825648; mos_id=rBEAAmGaFNawBwAOHRgWAgA=; _ga=GA1.2.1733238845.1637487830; uxs_uid=147e2110-500d-11ec-a7cb-8bb8b12c3186; KFP_DID=ee285837-cd1f-0a9b-c8a2-9cef6a4ee333; _ym_isad=2; _ym_visorc=w"}
                                         )
                 if response.status_code == 200:

@@ -296,7 +296,7 @@ class Testparser_timetable_t_mos_ru(TestCase):
         parser = parser_timetable_t_mos_ru(Timetable_builder_t_mos_ru())
         timetable = parser.parse(""""
 
-        <div class="pos_rel">
+        <div class="pos_rel">ic-change-a-b
             <div class="h4fs mb10">
                 <span id="schedule-route-header">
                     <span>Октябрьское трамвайное депо - Новоконная пл.</span>
@@ -474,3 +474,4 @@ class Testparser_timetable_t_mos_ru(TestCase):
         self.assertEqual(times1[1].get_color_special_flight(), "red")
         self.assertEqual(times1[2].get_color_special_flight(), "red")
         self.assertEqual(len(times1), 3)
+        self.assertTrue(timetable.has_another_direction())
